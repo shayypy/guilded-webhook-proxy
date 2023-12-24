@@ -22,42 +22,52 @@ const githubUserToAuthor = (user: z.infer<typeof GitHubUser>): APIEmbedAuthor =>
   url: `https://github.com/${user.login}`,
 });
 
-const getReactionsString = (reactions: z.infer<typeof GitHubReactions> | undefined): string | null => {
-  if (!reactions) return null;
-
-  let compiled = '';
+const getReactionsString = (reactions: z.infer<typeof GitHubReactions>): string | null => {
+  const compiled: string[] = [];
   if (reactions["+1"]) {
-    compiled += `👍 ${reactions["+1"]} `
+    compiled.push(`👍 ${reactions["+1"]}`);
   }
   if (reactions["-1"]) {
-    compiled += `👎 ${reactions["-1"]} `
+    compiled.push(`👎 ${reactions["-1"]}`);
   }
   if (reactions.confused) {
-    compiled += `😕 ${reactions.confused} `
+    compiled.push(`😕 ${reactions.confused}`);
   }
   if (reactions.eyes) {
-    compiled += `👀 ${reactions.eyes} `
+    compiled.push(`👀 ${reactions.eyes}`);
   }
   if (reactions.heart) {
-    compiled += `❤️ ${reactions.heart} `
+    compiled.push(`❤️ ${reactions.heart}`);
   }
   if (reactions.hooray) {
-    compiled += `🎉 ${reactions.hooray} `
+    compiled.push(`🎉 ${reactions.hooray}`);
   }
   if (reactions.laugh) {
-    compiled += `😆 ${reactions.laugh} `
+    compiled.push(`😆 ${reactions.laugh}`);
   }
   if (reactions.rocket) {
-    compiled += `🚀 ${reactions.rocket} `
+    compiled.push(`🚀 ${reactions.rocket}`);
   }
-  return compiled.trim() || null;
+  return compiled.length === 0 ? null : compiled.join(" • ");
+}
+
+const getReactionsEmbed = (reactions: z.infer<typeof GitHubReactions>): APIEmbed | undefined => {
+  const text = getReactionsString(reactions);
+  if (text) {
+    return {
+      // author: { name: "Reactions" },
+      description: text,
+    }
+  }
 }
 
 router
   .get("/", () => new Response("Hello!"))
   .post("/webhooks/:id/:token", async (request) => {
     const { id, token } = request.params;
-    console.log(id, token)
+    const search = new URL(request.url).searchParams;
+    const showReactions = search.get("reactions") !== "false";
+
     const ua = request.headers.get("User-Agent"),
       eventType_ = request.headers.get("X-GitHub-Event");
 
@@ -77,6 +87,7 @@ router
       const d = await payloadValidator.parseAsync({ type: eventType, pl: await request.json() });
       let cont = true;
       const embed: APIEmbed = { color: 0xfefefe };
+      let reactions: z.infer<typeof GitHubReactions> | undefined = undefined;
       if (d.pl.sender) {
         embed.author = githubUserToAuthor(d.pl.sender);
       }
@@ -100,19 +111,13 @@ router
           embed.url = getRepoUrl(d.pl.forkee);
           break;
         case "issue_comment": {
+          reactions = d.pl.comment.reactions;
+
           embed.author = githubUserToAuthor(d.pl.comment.user);
           embed.description = d.pl.comment.body.slice(0, 2048);
-          const reactions = getReactionsString(d.pl.comment.reactions);
-          if (reactions) {
-            embed.fields = [{
-              name: "Reactions",
-              value: reactions,
-              inline: false,
-            }];
-          }
-
           embed.title = `Comment ${d.pl.action} on issue #${d.pl.issue.number}`;
           embed.url = `${getRepoUrl(d.pl.repository)}/issues/${d.pl.issue.number}#issuecomment-${d.pl.comment.id}`;
+
           if (d.pl.action === "created") {
             embed.color = green;
           } else if (d.pl.action === "deleted") {
@@ -123,16 +128,9 @@ router
           break;
         }
         case "issues": {
+          reactions = d.pl.issue.reactions;
           embed.title = `Issue ${d.pl.action} (#${d.pl.issue.number}) - ${d.pl.issue.title}`;
           embed.url = `${getRepoUrl(d.pl.repository)}/issues/${d.pl.issue.number}`;
-          const reactions = getReactionsString(d.pl.issue.reactions);
-          if (reactions) {
-            embed.fields = [{
-              name: "Reactions",
-              value: reactions,
-              inline: false,
-            }];
-          }
 
           switch (d.pl.action) {
             case "opened":
@@ -161,11 +159,20 @@ router
       }
 
       if (cont) {
+        const embeds = [embed];
+        if (reactions && showReactions) {
+          const reactionEmbed = getReactionsEmbed(reactions);
+          if (reactionEmbed) {
+            reactionEmbed.color = embed.color;
+            embeds.push(reactionEmbed);
+          }
+        }
+
         const webhookUrl = `https://media.guilded.gg/webhooks/${id}/${token}`;
         const response = await fetch(webhookUrl, {
           method: "POST",
           body: JSON.stringify({
-            embeds: [embed],
+            embeds,
             username: "GitHub",
             avatar_url: "https://cdn.gilcdn.com/UserAvatar/3f8e4273b8b9dcacd57379a637a773f4-Large.png",
           }),

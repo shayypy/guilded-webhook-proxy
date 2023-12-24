@@ -1,5 +1,7 @@
 Prior to December 2023, Guilded had a native implementation of incoming GitHub webhook payloads. Unfortunately, this was removed along with some other webhook changes. This application brings it back as a drop-in replacement!
 
+For brevity, this application (guilded-webhook-proxy) will be referred to as "GWP" going forward.
+
 ## How to use
 
 Simply replace `media.guilded.gg` in your webhook URL with `guilded.shayy.workers.dev`. Keep the content type set to `application/json`.
@@ -13,6 +15,10 @@ Guilded sent errors about unknown event types through as a message, but this pro
 <!-- ### Immersive discussion
 
 Pass `?immersive=true` at the end of the webhook URL to enable immersive discussion mode.  -->
+
+### Reactions (optional)
+
+By default, GWP will show reaction counts (if any) under some applicable events. If you don't like this, you can pass `reactions=false` as a query parameter to disable it.
 
 ## Supported Events
 
@@ -90,4 +96,4 @@ Pass `?immersive=true` at the end of the webhook URL to enable immersive discuss
 
 ## Limitations
 
-The native Guilded implementation of this feature could create threads for pull request comments, but that is not possible as a regular application.
+The native Guilded implementation of this feature could create threads for pull request comments, but that is not possible as a regular application like GWP.
