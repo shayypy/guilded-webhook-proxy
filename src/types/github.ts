@@ -103,7 +103,7 @@ export const GitHubUser = z.object({
   repos_url: z.ostring(),
   events_url: z.ostring(),
   received_events_url: z.ostring(),
-  type: z.enum(["Bot", "User", "Organization"]).optional(),
+  type: z.enum(["Bot", "User", "Organization", "Mannequin"]).optional(),
   site_admin: z.boolean(),
   starred_at: z.ostring(),
 })
@@ -190,6 +190,78 @@ export const GitHubPullRequest = z.object({
   base: GitHubBranch,
 })
 
+export const GitHubAuthorAssociation = z.enum([
+  "COLLABORATOR", "CONTRIBUTOR", "FIRST_TIMER", "FIRST_TIME_CONTRIBUTOR", "MANNEQUIN", "MEMBER", "NONE", "OWNER"
+]);
+
+export const GitHubIssueLabel = z.object({
+  color: z.string(),
+  default: z.boolean(),
+  description: z.string().nullable(),
+  id: z.number(),
+  name: z.string(),
+  url: z.string(),
+});
+
+export const GitHubReactions = z.object({
+  "+1": z.number(),
+  "-1": z.number(),
+  confused: z.number(),
+  eyes: z.number(),
+  heart: z.number(),
+  hooray: z.number(),
+  laugh: z.number(),
+  rocket: z.number(),
+  total_count: z.number(),
+  url: z.string(),
+});
+
+export const GitHubIssue = z.object({
+  active_lock_reason: z.enum(["resolved", "off-topic", "too heated", "spam"]).nullable(),
+  assignee: GitHubUser.nullable(),
+  assignees: GitHubUser.nullable().array(),
+  author_association: GitHubAuthorAssociation,
+  body: z.string().nullable(),
+  closed_at: z.string().nullable(),
+  comments: z.number(),
+  comments_url: z.string(),
+  created_at: z.string(),
+  draft: z.oboolean(),
+  id: z.number(),
+  labels: GitHubIssueLabel.array(),
+  locked: z.boolean(),
+  number: z.number(),
+  pull_request: z.object({
+    diff_url: z.ostring(),
+    html_url: z.ostring(),
+    merged_at: z.ostring().nullable(),
+    patch_url: z.ostring(),
+    url: z.ostring(),
+  }).optional(),
+  reactions: GitHubReactions,
+  repository_url: z.string(),
+  state: z.enum(["open", "closed"]),
+  state_reason: z.ostring().nullable(),
+  timeline_url: z.ostring(),
+  title: z.string(),
+  updated_at: z.string(),
+  url: z.string(),
+  user: GitHubUser,
+});
+
+export const GitHubComment = z.object({
+  author_association: GitHubAuthorAssociation,
+  body: z.string(),
+  commit_id: z.ostring(),
+  created_at: z.string(),
+  id: z.number(),
+  line: z.onumber().nullable(),
+  path: z.ostring().nullable(),
+  position: z.onumber().nullable(),
+  reactions: GitHubReactions.optional(),
+  user: GitHubUser,
+});
+
 export const GitHubEventTypeToPayload = {
   check_run: z.object({
     type: z.literal("check_run"),
@@ -244,31 +316,7 @@ export const GitHubEventTypeToPayload = {
     type: z.literal("commit_comment"),
     pl: z.object({
       action: z.literal("created"),
-      comment: z.object({
-        author_association: z.enum([
-          "COLLABORATOR", "CONTRIBUTOR", "FIRST_TIMER", "FIRST_TIME_CONTRIBUTOR", "MANNEQUIN", "MEMBER", "NONE", "OWNER"
-        ]),
-        body: z.string(),
-        commit_id: z.string(),
-        created_at: z.string(),
-        id: z.number(),
-        line: z.number().nullable(),
-        path: z.string().nullable(),
-        position: z.number().nullable(),
-        reactions: z.object({
-          "+1": z.number(),
-          "-1": z.number(),
-          confused: z.number(),
-          eyes: z.number(),
-          heart: z.number(),
-          hooray: z.number(),
-          laugh: z.number(),
-          rocket: z.number(),
-          total_count: z.number(),
-          url: z.string(),
-        }).array(),
-        user: GitHubUser,
-      }),
+      comment: GitHubComment,
       repository: GitHubRepository,
       sender: GitHubUser,
     })
@@ -287,6 +335,26 @@ export const GitHubEventTypeToPayload = {
     type: z.literal("fork"),
     pl: z.object({
       forkee: GitHubRepository,
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
+  issue_comment: z.object({
+    type: z.literal("issue_comment"),
+    pl: z.object({
+      action: z.enum(["created", "deleted", "edited"]),
+      comment: GitHubComment,
+      issue: GitHubIssue,
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
+  issues: z.object({
+    type: z.literal("issues"),
+    pl: z.object({
+      action: z.enum(["assigned", "closed", "deleted", "demilestoned", "edited", "labeled", "locked", "milestoned", "opened", "pinned", "reopened", "transferred", "unassigned", "unlabeled", "unlocked", "unpinned"]),
+      assignee: GitHubUser.optional(),
+      issue: GitHubIssue,
       repository: GitHubRepository,
       sender: GitHubUser,
     }),

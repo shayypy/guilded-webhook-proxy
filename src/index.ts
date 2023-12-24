@@ -1,16 +1,57 @@
 import { Router, error, json } from "itty-router";
-import { GitHubEventType, GitHubEventTypeToPayload, GitHubRepository } from "./types/github";
+import { GitHubEventType, GitHubEventTypeToPayload, GitHubReactions, GitHubRepository, GitHubUser } from "./types/github";
 import { z } from "zod";
-import { APIEmbed } from "./types/guilded";
+import { APIEmbed, APIEmbedAuthor } from "./types/guilded";
 
 const router = Router()
 
 export interface Env {
 }
 
+const green = 0x69F362,
+  red = 0xC45248;
+
 const getRepoUrl = (repo: z.infer<typeof GitHubRepository>): string => (
   `https://github.com/${repo.full_name}`
 )
+
+const githubUserToAuthor = (user: z.infer<typeof GitHubUser>): APIEmbedAuthor => ({
+  name: user.login,
+  icon_url: user.avatar_url
+    ?? `https://avatars.githubusercontent.com/u/${user.id}?v=4`,
+  url: `https://github.com/${user.login}`,
+});
+
+const getReactionsString = (reactions: z.infer<typeof GitHubReactions> | undefined): string | null => {
+  if (!reactions) return null;
+
+  let compiled = '';
+  if (reactions["+1"]) {
+    compiled += `👍 ${reactions["+1"]} `
+  }
+  if (reactions["-1"]) {
+    compiled += `👎 ${reactions["-1"]} `
+  }
+  if (reactions.confused) {
+    compiled += `😕 ${reactions.confused} `
+  }
+  if (reactions.eyes) {
+    compiled += `👀 ${reactions.eyes} `
+  }
+  if (reactions.heart) {
+    compiled += `❤️ ${reactions.heart} `
+  }
+  if (reactions.hooray) {
+    compiled += `🎉 ${reactions.hooray} `
+  }
+  if (reactions.laugh) {
+    compiled += `😆 ${reactions.laugh} `
+  }
+  if (reactions.rocket) {
+    compiled += `🚀 ${reactions.rocket} `
+  }
+  return compiled.trim() || null;
+}
 
 router
   .get("/", () => new Response("Hello!"))
@@ -37,12 +78,7 @@ router
       let cont = true;
       const embed: APIEmbed = { color: 0xfefefe };
       if (d.pl.sender) {
-        embed.author = {
-          name: d.pl.sender.login,
-          icon_url: d.pl.sender.avatar_url
-            ?? `https://avatars.githubusercontent.com/u/${d.pl.sender.id}?v=4`,
-          url: `https://github.com/${d.pl.sender.login}`,
-        }
+        embed.author = githubUserToAuthor(d.pl.sender);
       }
       if ("repository" in d.pl && d.pl.repository) {
         embed.footer = {
@@ -63,6 +99,59 @@ router
           embed.title = `Forked to ${d.pl.forkee.full_name}`;
           embed.url = getRepoUrl(d.pl.forkee);
           break;
+        case "issue_comment": {
+          embed.author = githubUserToAuthor(d.pl.comment.user);
+          embed.description = d.pl.comment.body.slice(0, 2048);
+          const reactions = getReactionsString(d.pl.comment.reactions);
+          if (reactions) {
+            embed.fields = [{
+              name: "Reactions",
+              value: reactions,
+              inline: false,
+            }];
+          }
+
+          embed.title = `Comment ${d.pl.action} on issue #${d.pl.issue.number}`;
+          embed.url = `${getRepoUrl(d.pl.repository)}/issues/${d.pl.issue.number}#issuecomment-${d.pl.comment.id}`;
+          if (d.pl.action === "created") {
+            embed.color = green;
+          } else if (d.pl.action === "deleted") {
+            embed.color = red;
+          } else {
+            cont = false;
+          }
+          break;
+        }
+        case "issues": {
+          embed.title = `Issue ${d.pl.action} (#${d.pl.issue.number}) - ${d.pl.issue.title}`;
+          embed.url = `${getRepoUrl(d.pl.repository)}/issues/${d.pl.issue.number}`;
+          const reactions = getReactionsString(d.pl.issue.reactions);
+          if (reactions) {
+            embed.fields = [{
+              name: "Reactions",
+              value: reactions,
+              inline: false,
+            }];
+          }
+
+          switch (d.pl.action) {
+            case "opened":
+              embed.color = green;
+              embed.description = d.pl.issue.body ? d.pl.issue.body.slice(0, 2048) : undefined;
+              break;
+            case "closed":
+              embed.color = red;
+              embed.description = d.pl.issue.body ? d.pl.issue.body.slice(0, 2048) : undefined;
+              break;
+            case "locked":
+              embed.color = red;
+              embed.title = `Issue #${d.pl.issue.number} locked as ${d.pl.issue.active_lock_reason}`;
+              break;
+            default:
+              break;
+          }
+          break;
+        }
         case "ping":
           embed.title = "Ping";
           break;

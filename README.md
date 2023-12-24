@@ -40,8 +40,8 @@ Pass `?immersive=true` at the end of the webhook URL to enable immersive discuss
 - [ ] installation
 - [ ] installation_repositories
 - [ ] installation_target
-<!-- - [x] issue_comment -->
-<!-- - [x] issues -->
+- [x] issue_comment
+- [x] issues
 - [ ] label
 - [ ] marketplace_purchase
 - [ ] member
