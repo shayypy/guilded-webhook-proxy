@@ -1,5 +1,5 @@
 {
-  "name": "github-guilded-proxy",
+  "name": "guilded-webhook-proxy",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
