@@ -155,6 +155,11 @@ router
           }
           break;
         }
+        case "meta":
+          embed.title = "Webhook deleted";
+          embed.description = "👋 Goodbye";
+          embed.color = red;
+          break;
         case "ping":
           embed.title = "Ping";
           break;

@@ -262,6 +262,32 @@ export const GitHubComment = z.object({
   user: GitHubUser,
 });
 
+export const GitHubWebhook = z.object({
+  active: z.boolean(),
+  app_id: z.onumber(),
+  config: z.object({
+    content_type: z.enum(["json", "form"]).optional(),
+    insecure_ssl: z.string().or(z.number()).optional(),
+    secret: z.ostring(),
+    url: z.ostring(),
+  }),
+  created_at: z.string(),
+  deliveries_url: z.ostring(),
+  events: z.string().array(),
+  id: z.number(),
+  last_response: z.object({
+    code: z.number().nullable(),
+    status: z.string().nullable(),
+    message: z.string().nullable(),
+  }).optional(),
+  name: z.literal("web"),
+  ping_url: z.ostring(),
+  test_url: z.ostring(),
+  type: z.string(),
+  updated_at: z.string(),
+  url: z.ostring(),
+});
+
 export const GitHubEventTypeToPayload = {
   check_run: z.object({
     type: z.literal("check_run"),
@@ -359,34 +385,20 @@ export const GitHubEventTypeToPayload = {
       sender: GitHubUser,
     }),
   }),
+  meta: z.object({
+    type: z.literal("meta"),
+    pl: z.object({
+      action: z.literal("deleted"),
+      hook: GitHubWebhook,
+      hook_id: z.number(),
+      repository: GitHubRepository.optional(),
+      sender: GitHubUser.optional(),
+    }),
+  }),
   ping: z.object({
     type: z.literal("ping"),
     pl: z.object({
-      hook: z.object({
-        active: z.boolean(),
-        app_id: z.onumber(),
-        config: z.object({
-          content_type: z.enum(["json", "form"]).optional(),
-          insecure_ssl: z.string().or(z.number()).optional(),
-          secret: z.ostring(),
-          url: z.ostring(),
-        }),
-        created_at: z.string(),
-        deliveries_url: z.ostring(),
-        events: z.string().array(),
-        id: z.number(),
-        last_response: z.object({
-          code: z.number().nullable(),
-          status: z.string().nullable(),
-          message: z.string().nullable(),
-        }).optional(),
-        name: z.literal("web"),
-        ping_url: z.ostring(),
-        test_url: z.ostring(),
-        type: z.string(),
-        updated_at: z.string(),
-        url: z.ostring(),
-      }).optional(),
+      hook: GitHubWebhook.optional(),
       hook_id: z.onumber(),
       repository: GitHubRepository.optional(),
       sender: GitHubUser.optional(),

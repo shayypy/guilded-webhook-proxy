@@ -53,7 +53,7 @@ By default, GWP will show reaction counts (if any) under some applicable events.
 - [ ] member
 - [ ] membership
 - [ ] merge_group
-<!-- - [x] meta -->
+- [x] meta
 - [ ] milestone
 - [ ] org_block
 - [ ] organization
