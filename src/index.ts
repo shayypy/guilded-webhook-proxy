@@ -163,6 +163,9 @@ router
         case "ping":
           embed.title = "Ping";
           break;
+        case "public":
+          embed.title = "Repository visibility changed to public";
+          break;
         default:
           cont = false;
           break;

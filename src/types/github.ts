@@ -405,4 +405,11 @@ export const GitHubEventTypeToPayload = {
       zen: z.ostring(),
     }),
   }),
+  public: z.object({
+    type: z.literal("public"),
+    pl: z.object({
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
 };
