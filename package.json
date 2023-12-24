@@ -13,5 +13,9 @@
     "ngrok": "^5.0.0-beta.2",
     "typescript": "^5.0.4",
     "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "itty-router": "^4.0.25",
+    "zod": "^3.22.4"
   }
 }
