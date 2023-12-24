@@ -109,7 +109,7 @@ router
           embed.description = d.pl.comment.body.slice(0, 2048);
           break;
         case "delete":
-          embed.title = `${d.pl.ref_type} deleted: ${d.pl.ref.split("/")[1]}`;
+          embed.title = `${d.pl.ref_type === "branch" ? "Branch" : "Tag"} deleted: ${d.pl.ref}`;
           break;
         case "fork":
           embed.title = `Forked to ${d.pl.forkee.full_name}`;
