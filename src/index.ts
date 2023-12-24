@@ -8,12 +8,8 @@ const router = Router()
 export interface Env {
 }
 
-const getRepoSign = (repo: z.infer<typeof GitHubRepository>): string => (
-  `${repo.owner.login}/${repo.full_name}`
-)
-
 const getRepoUrl = (repo: z.infer<typeof GitHubRepository>): string => (
-  `https://github.com/${getRepoSign(repo)}`
+  `https://github.com/${repo.full_name}`
 )
 
 router
@@ -50,7 +46,7 @@ router
       }
       if ("repository" in d.pl && d.pl.repository) {
         embed.footer = {
-          text: getRepoSign(d.pl.repository).slice(0, 2048),
+          text: d.pl.repository.full_name.slice(0, 2048),
         };
       }
       switch (d.type) {
@@ -64,7 +60,7 @@ router
           embed.title = `${d.pl.ref_type} deleted: ${d.pl.ref.split("/")[1]}`;
           break;
         case "fork":
-          embed.title = `Forked to ${getRepoSign(d.pl.forkee)}`;
+          embed.title = `Forked to ${d.pl.forkee.full_name}`;
           embed.url = getRepoUrl(d.pl.forkee);
           break;
         case "ping":
