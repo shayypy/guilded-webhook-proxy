@@ -2,6 +2,7 @@
   "name": "github-guilded-proxy",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
