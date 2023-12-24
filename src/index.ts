@@ -62,7 +62,12 @@ const getReactionsEmbed = (reactions: z.infer<typeof GitHubReactions>): APIEmbed
 };
 
 router
-  .get("/", () => new Response("Hello!"))
+  .get("/", () => new Response(null, {
+    status: 302,
+    headers: {
+      Location: "https://github.com/shayypy/guilded-webhook-proxy#readme",
+    },
+  }))
   .post("/webhooks/:id/:token", async (request) => {
     const { id, token } = request.params;
     const search = new URL(request.url).searchParams;
