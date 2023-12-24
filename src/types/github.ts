@@ -283,6 +283,14 @@ export const GitHubEventTypeToPayload = {
       sender: GitHubUser,
     })
   }),
+  fork: z.object({
+    type: z.literal("fork"),
+    pl: z.object({
+      forkee: GitHubRepository,
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
   ping: z.object({
     type: z.literal("ping"),
     pl: z.object({
@@ -316,5 +324,5 @@ export const GitHubEventTypeToPayload = {
       sender: GitHubUser.optional(),
       zen: z.ostring(),
     }),
-  })
+  }),
 };

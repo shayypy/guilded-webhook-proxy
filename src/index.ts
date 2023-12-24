@@ -48,6 +48,11 @@ router
           url: `https://github.com/${d.pl.sender.login}`,
         }
       }
+      if ("repository" in d.pl && d.pl.repository) {
+        embed.footer = {
+          text: getRepoSign(d.pl.repository).slice(0, 2048),
+        };
+      }
       switch (d.type) {
         case "commit_comment":
           embed.title = "Commit comment created";
@@ -56,7 +61,11 @@ router
           embed.description = d.pl.comment.body.slice(0, 2048);
           break;
         case "delete":
-          embed.title = `[${getRepoSign(d.pl.repository)}] ${d.pl.ref_type} deleted: ${d.pl.ref.split("/")[1]}`;
+          embed.title = `${d.pl.ref_type} deleted: ${d.pl.ref.split("/")[1]}`;
+          break;
+        case "fork":
+          embed.title = `Forked to ${getRepoSign(d.pl.forkee)}`;
+          embed.url = getRepoUrl(d.pl.forkee);
           break;
         case "ping":
           embed.title = "Ping";
