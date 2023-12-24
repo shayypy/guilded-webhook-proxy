@@ -1,4 +1,4 @@
-name = "github-guilded-proxy"
+name = "guilded"
 main = "src/index.ts"
 compatibility_date = "2023-12-18"
 
