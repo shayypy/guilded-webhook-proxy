@@ -3,7 +3,7 @@ import { GitHubEventType, GitHubEventTypeToPayload, GitHubReactions, GitHubRepos
 import { z } from "zod";
 import { APIEmbed, APIEmbedAuthor } from "./types/guilded";
 
-const router = Router()
+const router = Router();
 
 export interface Env {
 }
@@ -13,7 +13,7 @@ const green = 0x69F362,
 
 const getRepoUrl = (repo: z.infer<typeof GitHubRepository>): string => (
   `https://github.com/${repo.full_name}`
-)
+);
 
 const githubUserToAuthor = (user: z.infer<typeof GitHubUser>): APIEmbedAuthor => ({
   name: user.login,
@@ -49,7 +49,7 @@ const getReactionsString = (reactions: z.infer<typeof GitHubReactions>): string 
     compiled.push(`🚀 ${reactions.rocket}`);
   }
   return compiled.length === 0 ? null : compiled.join(" • ");
-}
+};
 
 const getReactionsEmbed = (reactions: z.infer<typeof GitHubReactions>): APIEmbed | undefined => {
   const text = getReactionsString(reactions);
@@ -57,9 +57,9 @@ const getReactionsEmbed = (reactions: z.infer<typeof GitHubReactions>): APIEmbed
     return {
       // author: { name: "Reactions" },
       description: text,
-    }
+    };
   }
-}
+};
 
 router
   .get("/", () => new Response("Hello!"))
@@ -72,14 +72,14 @@ router
       eventType_ = request.headers.get("X-GitHub-Event");
 
     if (!ua?.startsWith("GitHub-Hookshot/")) {
-      return json({ code: "ProxyBadUserAgent", message: "Invalid user agent." }, { status: 400 })
+      return json({ code: "ProxyBadUserAgent", message: "Invalid user agent." }, { status: 400 });
     }
     if (!eventType_) {
-      return json({ code: "ProxyNoEventType", message: "No event type provided." }, { status: 400 })
+      return json({ code: "ProxyNoEventType", message: "No event type provided." }, { status: 400 });
     }
     const eventTypeParse = await GitHubEventType.safeParseAsync(eventType_);
     if (!eventTypeParse.success) {
-      return json({ code: "ProxyBadEventType", message: "Unsupported event type." }, { status: 400 })
+      return json({ code: "ProxyBadEventType", message: "Unsupported event type." }, { status: 400 });
     }
     const eventType = eventTypeParse.data;
     const payloadValidator = GitHubEventTypeToPayload[eventType as keyof typeof GitHubEventTypeToPayload];

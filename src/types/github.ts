@@ -106,7 +106,7 @@ export const GitHubUser = z.object({
   type: z.enum(["Bot", "User", "Organization", "Mannequin"]).optional(),
   site_admin: z.boolean(),
   starred_at: z.ostring(),
-})
+});
 
 export const GitHubRepository = z.object({
   id: z.number(),
@@ -188,7 +188,7 @@ export const GitHubPullRequest = z.object({
   url: z.string(),
   head: GitHubBranch,
   base: GitHubBranch,
-})
+});
 
 export const GitHubAuthorAssociation = z.enum([
   "COLLABORATOR", "CONTRIBUTOR", "FIRST_TIMER", "FIRST_TIME_CONTRIBUTOR", "MANNEQUIN", "MEMBER", "NONE", "OWNER"
