@@ -5,10 +5,12 @@
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "start": "wrangler dev"
+    "start": "wrangler dev",
+    "ngrok": "ngrok http 8787"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231218.0",
+    "ngrok": "^5.0.0-beta.2",
     "typescript": "^5.0.4",
     "wrangler": "^3.0.0"
   }
