@@ -85,6 +85,10 @@ export const GitHubEventType = z.enum([
   // "workflow_run",
 ]);
 
+export const GitHubAuthorAssociation = z.enum([
+  "COLLABORATOR", "CONTRIBUTOR", "FIRST_TIMER", "FIRST_TIME_CONTRIBUTOR", "MANNEQUIN", "MEMBER", "NONE", "OWNER"
+]);
+
 export const GitHubUser = z.object({
   login: z.string(),
   id: z.number(),
@@ -182,7 +186,7 @@ export const GitHubBranch = z.object({
   }),
 });
 
-export const GitHubPullRequest = z.object({
+export const GitHubPullRequestPartial = z.object({
   id: z.number(),
   number: z.number(),
   url: z.string(),
@@ -190,9 +194,7 @@ export const GitHubPullRequest = z.object({
   base: GitHubBranch,
 });
 
-export const GitHubAuthorAssociation = z.enum([
-  "COLLABORATOR", "CONTRIBUTOR", "FIRST_TIMER", "FIRST_TIME_CONTRIBUTOR", "MANNEQUIN", "MEMBER", "NONE", "OWNER"
-]);
+export const GitHubActiveLockReason = z.enum(["resolved", "off-topic", "too heated", "spam"]);
 
 export const GitHubIssueLabel = z.object({
   color: z.string(),
@@ -201,6 +203,67 @@ export const GitHubIssueLabel = z.object({
   id: z.number(),
   name: z.string(),
   url: z.string(),
+});
+
+export const GitHubPullRequest = z.object({
+  _links: z.record(
+    z.enum(["comments", "commits", "html", "issue", "review_comment", "review_comments", "self", "statuses"]),
+    z.object({ href: z.string() }),
+  ),
+  id: z.number(),
+  number: z.number(),
+  url: z.string(),
+  active_lock_reason: GitHubActiveLockReason.nullable(),
+  additions: z.onumber(),
+  assignee: GitHubUser.nullable(),
+  assignees: GitHubUser.nullable().array(),
+  author_association: GitHubAuthorAssociation,
+  auto_merge: z.object({
+    commit_message: z.string().nullable(),
+    commit_title: z.string().nullable(),
+    enabled_by: GitHubUser.nullable(),
+    merge_method: z.enum(["merge", "squash", "rebase"]),
+  }).nullable(),
+  base: z.object({
+    label: z.string(),
+    ref: z.string(),
+    repo: GitHubRepository,
+    sha: z.string(),
+    user: GitHubUser.nullable(),
+  }),
+  body: z.string().nullable(),
+  changed_files: z.onumber(),
+  closed_at: z.string().nullable(),
+  comments: z.onumber(),
+  comments_url: z.string(),
+  commits: z.onumber(),
+  commits_url: z.string(),
+  created_at: z.string(),
+  deletions: z.onumber(),
+  diff_url: z.string(),
+  draft: z.boolean(),
+  // head,
+  html_url: z.string(),
+  issue_url: z.string(),
+  labels: GitHubIssueLabel.array(),
+  locked: z.boolean(),
+  maintainer_can_modify: z.oboolean(),
+  merge_commit_sha: z.string().nullable(),
+  mergeable: z.oboolean().nullable(),
+  mergeable_state: z.ostring(),
+  merged: z.oboolean().nullable(),
+  merged_at: z.string().nullable(),
+  merged_by: GitHubUser.nullable(),
+  // milestone,
+  patch_url: z.string(),
+  rebaseable: z.oboolean().nullable(),
+  // requested_reviewers: array,
+  review_comments: z.onumber(),
+  review_comments_url: z.string(),
+  state: z.enum(["open", "closed"]),
+  title: z.string(),
+  updated_at: z.string(),
+  user: GitHubUser.nullable(),
 });
 
 export const GitHubReactions = z.object({
@@ -217,7 +280,7 @@ export const GitHubReactions = z.object({
 });
 
 export const GitHubIssue = z.object({
-  active_lock_reason: z.enum(["resolved", "off-topic", "too heated", "spam"]).nullable(),
+  active_lock_reason: GitHubActiveLockReason.nullable(),
   assignee: GitHubUser.nullable(),
   assignees: GitHubUser.nullable().array(),
   author_association: GitHubAuthorAssociation,
@@ -227,6 +290,7 @@ export const GitHubIssue = z.object({
   comments_url: z.string(),
   created_at: z.string(),
   draft: z.oboolean(),
+  html_url: z.string(),
   id: z.number(),
   labels: GitHubIssueLabel.array(),
   locked: z.boolean(),
@@ -315,7 +379,7 @@ export const GitHubEventTypeToPayload = {
           head_sha: z.ostring(),
           id: z.onumber(),
           node_id: z.ostring(),
-          pull_requests: GitHubPullRequest.array(),
+          pull_requests: GitHubPullRequestPartial.array(),
           repository: GitHubRepository,
           status: z.enum([
             "queued",
@@ -408,6 +472,39 @@ export const GitHubEventTypeToPayload = {
   public: z.object({
     type: z.literal("public"),
     pl: z.object({
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
+  pull_request: z.object({
+    type: z.literal("pull_request"),
+    pl: z.object({
+      action: z.enum([
+        "assigned",
+        "auto_merge_disabled",
+        "auto_merge_enabled",
+        "closed",
+        "converted_to_draft",
+        "demilestoned",
+        "dequeued",
+        "edited",
+        "enqueued",
+        "labeled",
+        "locked",
+        "milestoned",
+        "opened",
+        "ready_for_review",
+        "reopened",
+        "review_request_removed",
+        "review_requested",
+        "synchronize",
+        "unassigned",
+        "unlabeled",
+        "unlocked",
+      ]),
+      assignee: GitHubUser.optional(),
+      number: z.number(),
+      pull_request: GitHubPullRequest,
       repository: GitHubRepository,
       sender: GitHubUser,
     }),

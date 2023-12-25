@@ -135,7 +135,7 @@ router
         case "issues": {
           reactions = d.pl.issue.reactions;
           embed.title = `Issue ${d.pl.action} (#${d.pl.issue.number}) - ${d.pl.issue.title}`;
-          embed.url = `${getRepoUrl(d.pl.repository)}/issues/${d.pl.issue.number}`;
+          embed.url = d.pl.issue.html_url;
 
           switch (d.pl.action) {
             case "opened":
@@ -165,6 +165,39 @@ router
           break;
         case "public":
           embed.title = "Repository visibility changed to public";
+          break;
+        case "pull_request":
+          embed.title = `Pull request #${d.pl.number} ${d.pl.action.replace(/_/g, " ")} - ${d.pl.pull_request.title}`;
+          embed.url = d.pl.pull_request.html_url;
+
+          switch (d.pl.action) {
+            case "opened": {
+              embed.color = green;
+              embed.description = d.pl.pull_request.body ? d.pl.pull_request.body.slice(0, 2048) : undefined;
+              if (d.pl.pull_request.user) {
+                embed.author = githubUserToAuthor(d.pl.pull_request.user);
+              }
+              embed.fields = [];
+              const assignees = d.pl.pull_request.assignees.filter(Boolean).map(u => u as NonNullable<typeof u>);
+              if (assignees.length !== 0) {
+                embed.fields.push({
+                  name: "Assignees",
+                  value: assignees.map(u => u.login).join(", ").slice(0, 1024),
+                });
+              }
+              break;
+            }
+            case "closed":
+              embed.color = red;
+              embed.description = d.pl.pull_request.body ? d.pl.pull_request.body.slice(0, 2048) : undefined;
+              break;
+            case "locked":
+              embed.color = red;
+              embed.title = `Pull request #${d.pl.number} locked as ${d.pl.pull_request.active_lock_reason}`;
+              break;
+            default:
+              break;
+          }
           break;
         default:
           cont = false;

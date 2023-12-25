@@ -67,7 +67,7 @@ By default, GWP will show reaction counts (if any) under some applicable events.
 - [ ] projects_v2
 - [ ] projects_v2_item
 - [x] public
-<!-- - [x] pull_request -->
+- [x] pull_request
 <!-- - [x] pull_request_review_comment -->
 <!-- - [x] pull_request_review -->
 <!-- - [x] pull_request_review_thread -->
