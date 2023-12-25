@@ -106,4 +106,4 @@ Do not use this application to intentionally send spam to a Guilded webhook. Do 
 
 ## Privacy
 
-This is a stateless application. Incoming data is reformatted for and delivered to the Guilded webhook endpoint specified by the chosen URL, then it is discarded. For concerns, contact [shay on Guilded](https://www.guilded.gg/bearger) or [create an issue](/issues).
+This is a stateless application. Incoming data is reformatted for and delivered to the Guilded webhook endpoint specified by the chosen URL, then it is discarded. For concerns, contact [shay on Guilded](https://www.guilded.gg/bearger) or [create an issue](https://github.com/shayypy/guilded-webhook-proxy/issues).
