@@ -99,3 +99,11 @@ By default, GWP will show reaction counts (if any) under some applicable events.
 ## Limitations
 
 The native Guilded implementation of this feature could create threads for pull request comments, but that is not possible as a regular application like GWP.
+
+## Terms of Use
+
+Do not use this application to intentionally send spam to a Guilded webhook. Do not impersonate a GitHub webhook agent.
+
+## Privacy
+
+This is a stateless application. Incoming data is reformatted for and delivered to the Guilded webhook endpoint specified by the chosen URL, then it is discarded. For concerns, contact [shay on Guilded](https://www.guilded.gg/bearger) or [create an issue](/issues).
