@@ -115,13 +115,16 @@ router
           embed.title = `Forked to ${d.pl.forkee.full_name}`;
           embed.url = getRepoUrl(d.pl.forkee);
           break;
-        case "issue_comment": {
+        case "issue_comment":
+        case "pull_request_review_comment": {
           reactions = d.pl.comment.reactions;
 
           embed.author = githubUserToAuthor(d.pl.comment.user);
           embed.description = d.pl.comment.body.slice(0, 2048);
-          embed.title = `Comment ${d.pl.action} on issue #${d.pl.issue.number}`;
-          embed.url = `${getRepoUrl(d.pl.repository)}/issues/${d.pl.issue.number}#issuecomment-${d.pl.comment.id}`;
+          embed.title = d.type === "issue_comment"
+            ? `Comment ${d.pl.action} on issue #${d.pl.issue.number}`
+            : `Comment ${d.pl.action} on pull request #${d.pl.pull_request.number}`;
+          embed.url = d.pl.comment.html_url;
 
           if (d.pl.action === "created") {
             embed.color = green;
