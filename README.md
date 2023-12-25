@@ -1,3 +1,5 @@
+# guilded-webhook-proxy
+
 Prior to December 2023, Guilded had a native implementation of incoming GitHub webhook payloads. Unfortunately, this was removed along with some other webhook changes. This application brings it back as a drop-in replacement!
 
 For brevity, this application (guilded-webhook-proxy) will be referred to as "GWP" going forward.
