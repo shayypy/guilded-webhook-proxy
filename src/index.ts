@@ -61,6 +61,9 @@ const getReactionsEmbed = (reactions: z.infer<typeof GitHubReactions>): APIEmbed
   }
 };
 
+const shortCodeCommit = (commitId: string): string =>
+  "`" + commitId.slice(0, 5) + "`";
+
 router
   .get("/", () => new Response(null, {
     status: 302,
@@ -202,6 +205,24 @@ router
               break;
           }
           break;
+        case "pull_request_review": {
+          if (d.pl.action !== "submitted") {
+            cont = false;
+            break;
+          }
+          if (d.pl.review.user) {
+            embed.author = githubUserToAuthor(d.pl.review.user);
+          }
+          embed.title = `Review submitted on pull request #${d.pl.pull_request.number}`;
+          embed.url = d.pl.review.html_url;
+          embed.color = green;
+          embed.description = shortCodeCommit(d.pl.review.commit_id);
+          if (d.pl.review.body) {
+            embed.description += " ";
+            embed.description += d.pl.review.body.slice(0, 2048 - embed.description.length);
+          }
+          break;
+        }
         default:
           cont = false;
           break;

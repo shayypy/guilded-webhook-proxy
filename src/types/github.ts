@@ -521,4 +521,25 @@ export const GitHubEventTypeToPayload = {
       sender: GitHubUser,
     }),
   }),
+  pull_request_review: z.object({
+    type: z.literal("pull_request_review"),
+    pl: z.object({
+      action: z.enum(["submitted", "dismissed", "edited"]),
+      review: z.object({
+        _links: z.record(
+          z.enum(["html", "pull_request"]),
+          z.object({ href: z.string() }),
+        ),
+        author_association: GitHubAuthorAssociation,
+        body: z.string().nullable(),
+        commit_id: z.string(),
+        html_url: z.string(),
+        id: z.number(),
+        user: GitHubUser.nullable(),
+      }),
+      pull_request: GitHubPullRequest,
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
 };
