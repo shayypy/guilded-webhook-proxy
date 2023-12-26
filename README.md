@@ -30,7 +30,7 @@ By default, GWP will show reaction counts (if any) under some applicable events.
 - [ ] check_suite
 - [ ] code_scanning_alert
 - [x] commit_comment
-- [ ] create
+- [x] create
 - [ ] custom_property
 - [ ] custom_property_values
 - [x] delete

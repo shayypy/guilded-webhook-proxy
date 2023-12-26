@@ -111,8 +111,17 @@ router
             `${getRepoUrl(d.pl.repository)}/commit/${d.pl.comment.commit_id}#commitcomment-${d.pl.comment.id}`;
           embed.description = d.pl.comment.body.slice(0, 2048);
           break;
+        case "create":
+          embed.title = `${d.pl.ref_type === "branch" ? "Branch" : "Tag"} created: ${d.pl.ref}`;
+          embed.url = `${getRepoUrl(d.pl.repository)}/tree/${d.pl.ref}`;
+          if (d.pl.description) {
+            embed.description = d.pl.description.slice(0, 2048);
+          }
+          embed.color = green;
+          break;
         case "delete":
           embed.title = `${d.pl.ref_type === "branch" ? "Branch" : "Tag"} deleted: ${d.pl.ref}`;
+          embed.color = red;
           break;
         case "fork":
           embed.title = `Forked to ${d.pl.forkee.full_name}`;

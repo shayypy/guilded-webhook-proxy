@@ -18,7 +18,7 @@ export const GitHubEventType = z.enum([
   // "check_suite",
   // "code_scanning_alert",
   "commit_comment",
-  // "create",
+  "create",
   // "custom_property",
   // "custom_property_values",
   "delete",
@@ -432,6 +432,18 @@ export const GitHubEventTypeToPayload = {
     pl: z.object({
       action: z.literal("created"),
       comment: GitHubComment,
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    })
+  }),
+  create: z.object({
+    type: z.literal("create"),
+    pl: z.object({
+      description: z.string().nullable(),
+      master_branch: z.string(),
+      pusher_type: z.string(),
+      ref: z.string(),
+      ref_type: z.string(),
       repository: GitHubRepository,
       sender: GitHubUser,
     })
