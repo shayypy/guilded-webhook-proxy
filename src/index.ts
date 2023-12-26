@@ -62,7 +62,7 @@ const getReactionsEmbed = (reactions: z.infer<typeof GitHubReactions>): APIEmbed
 };
 
 const shortCodeCommit = (commitId: string): string =>
-  "`" + commitId.slice(0, 5) + "`";
+  "`" + commitId.slice(0, 8) + "`";
 
 router
   .get("/", () => new Response(null, {
@@ -205,7 +205,7 @@ router
               break;
           }
           break;
-        case "pull_request_review": {
+        case "pull_request_review":
           if (d.pl.action !== "submitted") {
             cont = false;
             break;
@@ -222,7 +222,21 @@ router
             embed.description += d.pl.review.body.slice(0, 2048 - embed.description.length);
           }
           break;
-        }
+        case "push":
+          embed.title = `[${d.pl.ref.replace(/^refs?\/(tags|heads)\//, "")}] ${d.pl.commits.length.toLocaleString()} new commit${d.pl.commits.length === 1 ? "" : "s"}`;
+          embed.url = d.pl.compare;
+          embed.description = "";
+          for (const commit of d.pl.commits) {
+            const line = `[${commit.id.slice(0, 8)}](${commit.url}) ${commit.message.slice(0, 50)} - ${commit.author.username ?? commit.author.name}\n`;
+            const remaining = 2048 - embed.description.length;
+            if (remaining >= line.length) {
+              embed.description += line;
+            } else {
+              const msg = `... ${d.pl.commits.length - embed.description.split("\n").length} more`;
+              break;
+            }
+          }
+          break;
         default:
           cont = false;
           break;

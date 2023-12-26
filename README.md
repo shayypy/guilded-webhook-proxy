@@ -73,7 +73,7 @@ By default, GWP will show reaction counts (if any) under some applicable events.
 - [x] pull_request_review_comment
 - [x] pull_request_review
 - [ ] pull_request_review_thread
-<!-- - [x] push -->
+- [x] push
 - [ ] registry_package
 <!-- - [x] release -->
 - [ ] repository_advisory

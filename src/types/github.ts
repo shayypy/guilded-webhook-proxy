@@ -355,6 +355,28 @@ export const GitHubWebhook = z.object({
   url: z.ostring(),
 });
 
+export const GitHubMinimalAuthor = z.object({
+  date: z.ostring(),
+  email: z.ostring().nullable(),
+  /** Equivalent to user `login` when `username` is not present */
+  name: z.string(),
+  username: z.ostring(),
+});
+
+export const GitHubCommit = z.object({
+  added: z.string().array().optional(),
+  author: GitHubMinimalAuthor,
+  committer: GitHubMinimalAuthor,
+  distinct: z.boolean(),
+  id: z.string(),
+  message: z.string(),
+  modified: z.string().array().optional(),
+  removed: z.string().array().optional(),
+  timestamp: z.string(),
+  tree_id: z.string(),
+  url: z.string(),
+});
+
 export const GitHubEventTypeToPayload = {
   check_run: z.object({
     type: z.literal("check_run"),
@@ -541,6 +563,24 @@ export const GitHubEventTypeToPayload = {
       pull_request: GitHubPullRequest,
       repository: GitHubRepository,
       sender: GitHubUser,
+    }),
+  }),
+  push: z.object({
+    type: z.literal("push"),
+    pl: z.object({
+      after: z.string(),
+      base_ref: z.string().nullable(),
+      before: z.string(),
+      commits: GitHubCommit.array(),
+      compare: z.string(),
+      created: z.boolean(),
+      deleted: z.boolean(),
+      forced: z.boolean(),
+      head_commit: GitHubCommit.nullable(),
+      pusher: GitHubMinimalAuthor,
+      ref: z.string(),
+      repository: GitHubRepository,
+      sender: GitHubUser.optional(),
     }),
   }),
 };
