@@ -76,7 +76,12 @@ router
     const { id, token } = request.params;
     const search = new URL(request.url).searchParams;
     const showReactions = search.get("reactions") !== "false",
-      showDrafts = search.get("drafts") === "true";
+      showDrafts = search.get("drafts") === "true",
+      immersiveRaw = search.get("immersive");
+
+    const immersiveMode = ["chat", "embeds"].includes(immersiveRaw || "")
+      ? immersiveRaw as "chat" | "embeds"
+      : null;
 
     const ua = request.headers.get("User-Agent"),
       eventType_ = request.headers.get("X-GitHub-Event");
@@ -97,6 +102,8 @@ router
       const d = await payloadValidator.parseAsync({ type: eventType, pl: await request.json() });
       let cont = true;
       const embed: APIEmbed = { color: 0xfefefe };
+      let immContent: string | undefined = undefined;
+      const immEmbed: APIEmbed = { color: 0xfefefe };
       let reactions: z.infer<typeof GitHubReactions> | undefined = undefined;
       if (d.pl.sender) {
         embed.author = githubUserToAuthor(d.pl.sender);
@@ -108,10 +115,15 @@ router
       }
       switch (d.type) {
         case "commit_comment":
+          reactions = d.pl.comment.reactions;
           embed.title = "Commit comment created";
           embed.url =
             `${getRepoUrl(d.pl.repository)}/commit/${d.pl.comment.commit_id}#commitcomment-${d.pl.comment.id}`;
           embed.description = d.pl.comment.body.slice(0, 2048);
+
+          immContent = d.pl.comment.body;
+          immEmbed.title = `Replying to commit ${shortCodeCommit(d.pl.comment.commit_id ?? "")}`;
+          immEmbed.url = d.pl.comment.html_url;
           break;
         case "create":
           embed.title = `${d.pl.ref_type === "branch" ? "Branch" : "Tag"} created: ${d.pl.ref}`;
@@ -139,6 +151,11 @@ router
             ? `Comment ${d.pl.action} on issue #${d.pl.issue.number}`
             : `Comment ${d.pl.action} on pull request #${d.pl.pull_request.number}`;
           embed.url = d.pl.comment.html_url;
+
+          // This is too vague for pull request comments
+          immContent = d.pl.comment.body;
+          immEmbed.title = `Replying to ${d.type === "issue_comment" ? `issue #${d.pl.issue.number}` : `pull request #${d.pl.pull_request.number}`}`;
+          immEmbed.url = d.pl.comment.html_url;
 
           if (d.pl.action === "created") {
             embed.color = green;
@@ -231,7 +248,11 @@ router
           if (d.pl.review.body) {
             embed.description += " ";
             embed.description += d.pl.review.body.slice(0, 2048 - embed.description.length);
+
           }
+          immContent = d.pl.review.body ?? undefined;
+          immEmbed.title = `Reviewing pull request #${d.pl.pull_request.number}`;
+          immEmbed.url = d.pl.review.html_url;
           break;
         case "push":
           if (d.pl.commits.length === 0) {
@@ -295,22 +316,56 @@ router
 
       if (cont) {
         const embeds = [embed];
+        const immEmbeds = [immEmbed];
         if (reactions && showReactions) {
           const reactionEmbed = getReactionsEmbed(reactions);
           if (reactionEmbed) {
             reactionEmbed.color = embed.color;
             embeds.push(reactionEmbed);
+            immEmbeds.push(reactionEmbed);
+          }
+        }
+
+        let payload: {
+          content?: string;
+          embeds?: APIEmbed[];
+          username?: string;
+          avatar_url?: string;
+        } = {
+          embeds,
+          username: "GitHub",
+          avatar_url: "https://cdn.gilcdn.com/UserAvatar/3f8e4273b8b9dcacd57379a637a773f4-Large.png",
+        };
+
+        if (immersiveMode && immContent !== undefined) {
+          immContent = immContent
+            .replace(/[^<]?@([\w.-]+)/gm, "[@$1](https://github.com/$1)")
+            .replace(/<@(\w+)>/gm, "@$1");
+
+          if (immEmbeds.length === 2) {
+            immEmbeds[1].color = immEmbed.color;
+          }
+          if (immersiveMode === "chat") {
+            payload = {
+              content: immContent.slice(0, 2000),
+              embeds: immEmbeds,
+              username: embed.author?.name,
+              avatar_url: embed.author?.icon_url,
+            };
+          } else if (immersiveMode === "embeds") {
+            immEmbed.description = immContent.slice(0, 2048);
+            payload = {
+              embeds: immEmbeds,
+              username: embed.author?.name?.slice(0, 128),
+              avatar_url: embed.author?.icon_url,
+            };
           }
         }
 
         const webhookUrl = `https://media.guilded.gg/webhooks/${id}/${token}`;
         const response = await fetch(webhookUrl, {
           method: "POST",
-          body: JSON.stringify({
-            embeds,
-            username: "GitHub",
-            avatar_url: "https://cdn.gilcdn.com/UserAvatar/3f8e4273b8b9dcacd57379a637a773f4-Large.png",
-          }),
+          body: JSON.stringify(payload),
           headers: {
             "Content-Type": "application/json",
           }

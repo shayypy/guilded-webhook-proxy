@@ -14,9 +14,9 @@ Simply replace `media.guilded.gg` in your webhook URL with `guilded.shayy.worker
 
 Guilded sent errors about unknown event types through as a message, but this proxy does not. If you want to see everything without errors in your chat channel, just enable "Send me everything".
 
-<!-- ### Immersive discussion
+### Immersive discussion
 
-Pass `?immersive=true` at the end of the webhook URL to enable immersive discussion mode.  -->
+Pass `immersive=chat` at the end of the webhook URL to enable immersive discussion mode. This feature makes use of custom profiles to make it appear like GitHub users are chatting in your webhook channel. To display user messages with embeds (different sub/superset of markdown), use `immersive=embeds` instead.
 
 ### Reactions (optional)
 
@@ -30,7 +30,7 @@ By default, to avoid spam, messages generated for the `release` event will not b
 
 - [ ] branch_protection_configuration
 - [ ] branch_protection_rule
-<!-- - [x] check_run -->
+- [ ] check_run
 - [ ] check_suite
 - [ ] code_scanning_alert
 - [x] commit_comment
