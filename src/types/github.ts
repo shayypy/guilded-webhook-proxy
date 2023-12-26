@@ -140,9 +140,10 @@ export const GitHubRepository = z.object({
   archived: z.oboolean(),
   disabled: z.oboolean(),
   visibility: z.ostring(),
-  pushed_at: z.ostring().nullable(),
-  created_at: z.ostring().nullable(),
-  updated_at: z.ostring().nullable(),
+  // Inconsistent
+  // pushed_at: z.ostring().nullable(),
+  // created_at: z.ostring().nullable(),
+  // updated_at: z.ostring().nullable(),
   // ...
   forks: z.onumber(),
   open_issues: z.onumber(),
