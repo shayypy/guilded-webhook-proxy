@@ -22,6 +22,10 @@ Pass `?immersive=true` at the end of the webhook URL to enable immersive discuss
 
 By default, GWP will show reaction counts (if any) under some applicable events. If you don't like this, you can pass `reactions=false` as a query parameter to disable it.
 
+### No draft spam
+
+By default, to avoid spam, messages generated for the `release` event will not be sent if the release is still marked as a draft. To disable this and see messages for draft releases, pass `drafts=true` as a query parameter.
+
 ## Supported Events
 
 - [ ] branch_protection_configuration
@@ -75,7 +79,7 @@ By default, GWP will show reaction counts (if any) under some applicable events.
 - [ ] pull_request_review_thread
 - [x] push
 - [ ] registry_package
-<!-- - [x] release -->
+- [x] release
 - [ ] repository_advisory
 <!-- - [x] repository -->
 - [ ] repository_dispatch

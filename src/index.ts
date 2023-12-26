@@ -9,7 +9,8 @@ export interface Env {
 }
 
 const green = 0x69F362,
-  red = 0xC45248;
+  red = 0xC45248,
+  yellow = 0xE4E74B;
 
 const getRepoUrl = (repo: z.infer<typeof GitHubRepository>): string => (
   `https://github.com/${repo.full_name}`
@@ -74,7 +75,8 @@ router
   .post("/webhooks/:id/:token", async (request) => {
     const { id, token } = request.params;
     const search = new URL(request.url).searchParams;
-    const showReactions = search.get("reactions") !== "false";
+    const showReactions = search.get("reactions") !== "false",
+      showDrafts = search.get("drafts") === "true";
 
     const ua = request.headers.get("User-Agent"),
       eventType_ = request.headers.get("X-GitHub-Event");
@@ -232,6 +234,11 @@ router
           }
           break;
         case "push":
+          if (d.pl.commits.length === 0) {
+            cont = false;
+            break;
+          }
+
           embed.title = `[${d.pl.ref.replace(/^refs?\/(tags|heads)\//, "")}] ${d.pl.commits.length.toLocaleString()} new commit${d.pl.commits.length === 1 ? "" : "s"}`;
           embed.url = d.pl.compare;
           embed.description = "";
@@ -247,6 +254,38 @@ router
               }
               break;
             }
+          }
+          break;
+        case "release":
+          reactions = d.pl.release.reactions;
+          if (d.pl.release.draft && !showDrafts) {
+            // Most people probably don't want draft notifications
+            cont = false;
+            break;
+          }
+
+          if (d.pl.release.body && ["created", "released", "prereleased", "published", "deleted"].includes(d.pl.action)) {
+            embed.description = d.pl.release.body.slice(0, 2048);
+          }
+          embed.title = `${d.pl.release.draft ? "Draft" : "Release"} ${d.pl.action} - ${d.pl.release.name ?? d.pl.release.tag_name}`;
+          embed.url = d.pl.release.html_url;
+
+          if (["created", "published", "released"].includes(d.pl.action)) {
+            if (d.pl.release.draft) embed.color = yellow;
+            else embed.color = green;
+          } else if (["deleted", "unpublished"].includes(d.pl.action)) {
+            embed.color = red;
+          }
+
+          if (d.pl.release.assets.length !== 0) {
+            embed.fields = [{
+              name: "Assets",
+              value: d.pl.release.assets
+                .map(asset => `[${asset.name}](${asset.browser_download_url}) ${asset.download_count.toLocaleString()} 📥`)
+                .join("\n")
+                .slice(0, 1024),
+              inline: false,
+            }];
           }
           break;
         default:
