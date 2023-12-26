@@ -241,7 +241,10 @@ router
             if (remaining >= line.length) {
               embed.description += line;
             } else {
-              const msg = `... ${d.pl.commits.length - embed.description.split("\n").length} more`;
+              const msg = `\n... ${d.pl.commits.length - embed.description.split("\n").length} more`;
+              if (remaining >= msg.length) {
+                embed.description += msg;
+              }
               break;
             }
           }
