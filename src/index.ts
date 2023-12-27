@@ -1,6 +1,6 @@
 import { Router, error, json } from "itty-router";
-import { GitHubEventType, GitHubEventTypeToPayload, GitHubReactions, GitHubRepository, GitHubUser } from "./types/github";
 import { z } from "zod";
+import { GitHubEventType, GitHubEventTypeToPayload, GitHubReactions, GitHubRepository, GitHubUser } from "./types/github";
 import { APIEmbed, APIEmbedAuthor } from "./types/guilded";
 
 const router = Router();
@@ -197,9 +197,9 @@ router
         case "ping":
           embed.title = "Ping";
           break;
-        case "public":
-          embed.title = "Repository visibility changed to public";
-          break;
+        // case "public":
+        //   embed.title = "Repository visibility changed to public";
+        //   break;
         case "pull_request":
           embed.title = `Pull request #${d.pl.number} ${d.pl.action.replace(/_/g, " ")} - ${d.pl.pull_request.title}`;
           embed.url = d.pl.pull_request.html_url;
@@ -307,6 +307,44 @@ router
                 .slice(0, 1024),
               inline: false,
             }];
+          }
+          break;
+        case "repository":
+          embed.title = `Repository ${d.pl.action}`;
+          embed.url = getRepoUrl(d.pl.repository);
+          if (d.pl.repository.owner.type === "Organization" || d.pl.action === "created") {
+            embed.title += ` - ${d.pl.repository.name}`;
+          }
+
+          switch (d.pl.action) {
+            case "created": {
+              embed.color = green;
+              embed.description = d.pl.repository.description?.slice(0, 2048);
+              if (d.pl.repository.fork) {
+                embed.title += " (fork)";
+              }
+              break;
+            }
+            case "deleted":
+              embed.color = red;
+              embed.description = d.pl.repository.description?.slice(0, 2048);
+              break;
+            case "publicized":
+              embed.title = embed.title.replace(d.pl.action, "visibility set to public");
+              break;
+            case "privatized":
+              embed.title = embed.title.replace(d.pl.action, "visibility set to private");
+              break;
+            case "renamed":
+              embed.title = `Repository renamed: ${d.pl.changes.repository.name.from} -> ${d.pl.repository.name}`;
+              break;
+            case "transferred": {
+              const lastOwner = d.pl.changes.owner.from;
+              embed.title = `Repository transferred from @${lastOwner.organization?.login ?? lastOwner.user?.login} to @${d.pl.repository.owner.login}`;
+              break;
+            }
+            default:
+              break;
           }
           break;
         default:

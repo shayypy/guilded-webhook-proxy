@@ -56,7 +56,7 @@ export const GitHubEventType = z.enum([
   // "project_column",
   // "projects_v2",
   // "projects_v2_item",
-  "public",
+  // "public",
   "pull_request",
   "pull_request_review_comment",
   "pull_request_review",
@@ -110,6 +110,22 @@ export const GitHubUser = z.object({
   type: z.enum(["Bot", "User", "Organization", "Mannequin"]).optional(),
   site_admin: z.boolean(),
   starred_at: z.ostring(),
+});
+
+export const GitHubOrganization = z.object({
+  avatar_url: z.string(),
+  description: z.string().nullable(),
+  events_url: z.string(),
+  hooks_url: z.string(),
+  html_url: z.ostring(),
+  id: z.number(),
+  issues_url: z.string(),
+  login: z.string(),
+  members_url: z.string(),
+  node_id: z.string(),
+  public_members_url: z.string(),
+  repos_url: z.string(),
+  url: z.string(),
 });
 
 export const GitHubRepository = z.object({
@@ -640,5 +656,57 @@ export const GitHubEventTypeToPayload = {
       repository: GitHubRepository,
       sender: GitHubUser,
     }),
+  }),
+  repository: z.object({
+    type: z.literal("repository"),
+    pl: z.discriminatedUnion("action", [
+      z.object({
+        action: z.enum([
+          "archived",
+          "created",
+          "deleted",
+          "privatized",
+          "publicized",
+          "unarchived",
+        ]),
+        repository: GitHubRepository,
+        sender: GitHubUser,
+      }),
+      z.object({
+        action: z.literal("edited"),
+        changes: z.object({
+          default_branch: z.object({ from: z.string() }).optional(),
+          description: z.object({ from: z.string().nullable() }).optional(),
+          homepage: z.object({ from: z.string().nullable() }).optional(),
+          topics: z.object({ from: z.string().array().nullable() }).optional(),
+        }),
+        repository: GitHubRepository,
+        sender: GitHubUser,
+      }),
+      z.object({
+        action: z.literal("renamed"),
+        changes: z.object({
+          repository: z.object({
+            name: z.object({ from: z.string() }),
+          }),
+        }),
+        repository: GitHubRepository,
+        sender: GitHubUser,
+      }),
+      z.object({
+        action: z.literal("transferred"),
+        changes: z.object({
+          owner: z.object({
+            from: z.object({
+              organization: GitHubOrganization.optional(),
+              user: GitHubUser.nullable().optional(),
+            }),
+          }),
+        }),
+        // organization: GitHubOrganization.optional(),
+        repository: GitHubRepository,
+        sender: GitHubUser,
+      }),
+    ]),
   }),
 };

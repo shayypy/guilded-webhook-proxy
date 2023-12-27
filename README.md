@@ -72,7 +72,7 @@ By default, to avoid spam, messages generated for the `release` event will not b
 - [ ] project_column
 - [ ] projects_v2
 - [ ] projects_v2_item
-- [x] public
+- [ ] public (uses `repository.publicized` instead)
 - [x] pull_request
 - [x] pull_request_review_comment
 - [x] pull_request_review
@@ -81,7 +81,7 @@ By default, to avoid spam, messages generated for the `release` event will not b
 - [ ] registry_package
 - [x] release
 - [ ] repository_advisory
-<!-- - [x] repository -->
+- [x] repository
 - [ ] repository_dispatch
 - [ ] repository_import
 - [ ] repository_ruleset
