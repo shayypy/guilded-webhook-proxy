@@ -718,4 +718,33 @@ export const GitHubEventTypeToPayload = {
       starred_at: z.string().nullable(),
     }),
   }),
+  status: z.object({
+    type: z.literal("status"),
+    pl: z.object({
+      avatar_url: z.ostring().nullable(),
+      branches: z.object({
+        commit: z.object({
+          sha: z.string().nullable(),
+          url: z.string().nullable(),
+        }),
+        name: z.string(),
+        protected: z.boolean(),
+      }).array(),
+      commit: z.object({
+        html_url: z.string(),
+        sha: z.string(),
+      }),
+      context: z.string(),
+      created_at: z.string(),
+      description: z.string().nullable(),
+      id: z.number(),
+      name: z.string(),
+      sha: z.string(),
+      state: z.enum(["pending", "success", "failure", "error"]),
+      target_url: z.string().nullable(),
+      updated_at: z.string(),
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
 };

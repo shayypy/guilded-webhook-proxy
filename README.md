@@ -92,7 +92,7 @@ By default, to avoid spam, messages generated for the `release` event will not b
 - [ ] security_and_analysis
 - [ ] sponsorship
 - [x] star
-<!-- - [x] status -->
+- [x] status
 - [ ] team_add
 - [ ] team
 <!-- - [x] watch -->

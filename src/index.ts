@@ -358,6 +358,26 @@ router
             embed.color = red;
           }
           break;
+        case "status":
+          embed.url = d.pl.commit.html_url;
+          embed.description = d.pl.description?.slice(0, 2048);
+          embed.title = `Status updated for commit ${shortCodeCommit(d.pl.commit.sha)}: ${d.pl.state}`;
+          switch (d.pl.state) {
+            case "error":
+            case "failure":
+              embed.color = red;
+              break;
+            case "pending":
+              embed.color = yellow;
+              break;
+            case "success":
+              embed.color = green;
+              break;
+            default:
+              cont = false;
+              break;
+          }
+          break;
         default:
           cont = false;
           break;
