@@ -196,6 +196,7 @@ router
           break;
         case "ping":
           embed.title = "Ping";
+          embed.description = `You have added this webhook correctly! Thanks for using [guilded-webhook-proxy](${new URL(request.url).origin}).`;
           break;
         // case "public":
         //   embed.title = "Repository visibility changed to public";
