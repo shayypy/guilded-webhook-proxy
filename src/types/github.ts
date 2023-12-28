@@ -709,4 +709,13 @@ export const GitHubEventTypeToPayload = {
       }),
     ]),
   }),
+  star: z.object({
+    type: z.literal("star"),
+    pl: z.object({
+      action: z.enum(["created", "deleted"]),
+      repository: GitHubRepository,
+      sender: GitHubUser,
+      starred_at: z.string().nullable(),
+    }),
+  }),
 };

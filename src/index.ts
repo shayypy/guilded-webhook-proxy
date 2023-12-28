@@ -347,6 +347,17 @@ router
               break;
           }
           break;
+        case "star":
+          // This event is kind of weird.
+          // I'm not sure we need to be tracking who stars and unstars a repo?
+          embed.title = `Star ${d.pl.action === "created" ? "added" : "removed"}`;
+          embed.description = `${d.pl.repository.name} now has ${d.pl.repository.stargazers_count} star${d.pl.repository.stargazers_count === 1 ? "" : "s"}`;
+          if (d.pl.action === "created") {
+            embed.color = 0xDCB556;
+          } else {
+            embed.color = red;
+          }
+          break;
         default:
           cont = false;
           break;
