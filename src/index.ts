@@ -379,6 +379,9 @@ router
               break;
           }
           break;
+        case "watch":
+          embed.title = `Now watching ${d.pl.repository.name}`;
+          break;
         default:
           cont = false;
           break;

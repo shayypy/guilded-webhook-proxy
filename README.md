@@ -12,7 +12,7 @@ Simply replace `media.guilded.gg` in your webhook URL with `guilded.shayy.worker
 
 ### Silent errors
 
-Guilded sent errors about unknown event types through as a message, but this proxy does not. If you want to see everything without errors in your chat channel, just enable "Send me everything".
+Guilded sent errors about unknown event types through as a message, but this proxy does not. If you want to see everything without errors in your chat channel, just enable "Send me everything" (although you may want to disable `star` and `watch` for particularly large repositories).
 
 ### Immersive discussion
 
@@ -95,7 +95,7 @@ By default, to avoid spam, messages generated for the `release` event will not b
 - [x] status
 - [ ] team_add
 - [ ] team
-<!-- - [x] watch -->
+- [x] watch
 - [ ] workflow_dispatch
 - [ ] workflow_job
 - [ ] workflow_run

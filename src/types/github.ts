@@ -747,4 +747,12 @@ export const GitHubEventTypeToPayload = {
       sender: GitHubUser,
     }),
   }),
+  watch: z.object({
+    type: z.literal("watch"),
+    pl: z.object({
+      action: z.literal("started"),
+      repository: GitHubRepository,
+      sender: GitHubUser,
+    }),
+  }),
 };
