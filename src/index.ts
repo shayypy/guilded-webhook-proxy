@@ -69,7 +69,7 @@ router
   .get("/", () => new Response(null, {
     status: 302,
     headers: {
-      Location: "https://github.com/shayypy/guilded-webhook-proxy#readme",
+      Location: "https://gwp.shay.cat",
     },
   }))
   .post("/webhooks/:id/:token", async (request) => {
