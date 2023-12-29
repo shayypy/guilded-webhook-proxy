@@ -6,7 +6,7 @@ For brevity, this application (guilded-webhook-proxy) will be referred to as "GW
 
 ## How to use
 
-Simply replace `media.guilded.gg` in your webhook URL with `guilded.shayy.workers.dev`. Keep the content type set to `application/json`.
+Simply replace `media.guilded.gg` in your webhook URL with `guilded.shayy.workers.dev`. Keep the content type set to `application/json`. You can also use [this handy URL generator](https://gwp.shay.cat)!
 
 ## Goodies
 
