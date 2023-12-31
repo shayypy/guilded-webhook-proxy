@@ -78,7 +78,7 @@ router
     const showReactions = search.get("reactions") !== "false",
       showDrafts = search.get("drafts") === "true",
       immersiveRaw = search.get("immersive"),
-      forceProfile = search.get("profile") !== "none",
+      forceProfile = search.get("branded") !== "false",
       profileUsername = search.get("username"),
       profileAvatarUrl = search.get("avatarUrl");
 

@@ -16,7 +16,7 @@ Guilded sent errors about unknown event types through as a message, but this pro
 
 ### Custom profiles
 
-Guilded forced a webhook name of GitHub and avatar of the GitHub logo, but this can be disabled in GWP by passing `profile=none` as a query parameter. This will cause the messages to use the default name & avatar configured in Guilded settings. To customize even further, pass `username=xxx` and/or `avatarUrl=yyy`, where `xxx` is a URL-encoded string up to 128 characters, and `yyy` is a URL-encoded image URL for the profile picture. This is particularly useful if you want to use the same webhook for multiple repositories or organizations. This will be ignored for applicable [immersive mode](#immersive-discussion) messages.
+Guilded forced a webhook name of GitHub and avatar of the GitHub logo, but this can be disabled in GWP by passing `branded=false` as a query parameter. This will cause the messages to use the default name & avatar configured in Guilded settings. To customize even further, pass `username=xxx` and/or `avatarUrl=yyy`, where `xxx` is a URL-encoded string up to 128 characters, and `yyy` is a URL-encoded image URL for the profile picture. This is particularly useful if you want to use the same webhook for multiple repositories or organizations. This will be ignored for applicable [immersive mode](#immersive-discussion) messages.
 
 ### Immersive discussion
 
