@@ -77,7 +77,21 @@ router
     const search = new URL(request.url).searchParams;
     const showReactions = search.get("reactions") !== "false",
       showDrafts = search.get("drafts") === "true",
-      immersiveRaw = search.get("immersive");
+      immersiveRaw = search.get("immersive"),
+      forceProfile = search.get("profile") !== "none",
+      profileUsername = search.get("username"),
+      profileAvatarUrl = search.get("avatarUrl");
+
+    if (profileUsername && profileUsername.length > 128) {
+      return json({ code: "ProxyBadUsername", message: "Username is too long." }, { status: 400 });
+    }
+    if (profileAvatarUrl) {
+      try {
+        new URL(profileAvatarUrl);
+      } catch {
+        return json({ code: "ProxyBadAvatar", message: "Avatar URL must be a valid URL." }, { status: 400 });
+      }
+    }
 
     const immersiveMode = ["chat", "embeds"].includes(immersiveRaw || "")
       ? immersiveRaw as "chat" | "embeds"
@@ -404,11 +418,14 @@ router
           embeds?: APIEmbed[];
           username?: string;
           avatar_url?: string;
-        } = {
-          embeds,
-          username: "GitHub",
-          avatar_url: "https://cdn.gilcdn.com/UserAvatar/3f8e4273b8b9dcacd57379a637a773f4-Large.png",
-        };
+        } = { embeds };
+
+        if (forceProfile) {
+          payload.username = "GitHub";
+          payload.avatar_url = "https://cdn.gilcdn.com/UserAvatar/3f8e4273b8b9dcacd57379a637a773f4-Large.png";
+        }
+        if (profileUsername) payload.username = profileUsername;
+        if (profileAvatarUrl) payload.avatar_url = profileAvatarUrl;
 
         if (immersiveMode && immContent !== undefined) {
           immContent = immContent

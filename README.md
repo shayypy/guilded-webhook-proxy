@@ -14,6 +14,10 @@ Simply replace `media.guilded.gg` in your webhook URL with `guilded.shayy.worker
 
 Guilded sent errors about unknown event types through as a message, but this proxy does not. If you want to see everything without errors in your chat channel, just enable "Send me everything" (although you may want to disable `star` and `watch` for particularly large repositories).
 
+### Custom profiles
+
+Guilded forced a webhook name of GitHub and avatar of the GitHub logo, but this can be disabled in GWP by passing `profile=none` as a query parameter. This will cause the messages to use the default name & avatar configured in Guilded settings. To customize even further, pass `username=xxx` and/or `avatarUrl=yyy`, where `xxx` is a URL-encoded string up to 128 characters, and `yyy` is a URL-encoded image URL for the profile picture. This is particularly useful if you want to use the same webhook for multiple repositories or organizations. This will be ignored for applicable [immersive mode](#immersive-discussion) messages.
+
 ### Immersive discussion
 
 Pass `immersive=chat` at the end of the webhook URL to enable immersive discussion mode. This feature makes use of custom profiles to make it appear like GitHub users are chatting in your webhook channel. To display user messages with embeds (different sub/superset of markdown), use `immersive=embeds` instead.
