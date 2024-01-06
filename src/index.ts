@@ -20,7 +20,7 @@ const githubUserToAuthor = (user: z.infer<typeof GitHubUser>): APIEmbedAuthor =>
   name: user.login,
   icon_url: user.avatar_url
     ?? `https://avatars.githubusercontent.com/u/${user.id}?v=4`,
-  url: `https://github.com/${user.login}`,
+  url: user.html_url ?? `https://github.com/${user.login}`,
 });
 
 const getReactionsString = (reactions: z.infer<typeof GitHubReactions>): string | null => {
