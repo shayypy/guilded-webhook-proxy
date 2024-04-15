@@ -1,16 +1,13 @@
 import { Router, error, json } from "itty-router";
-import { z } from "zod";
-import { GitHubEventType, GitHubEventTypeToPayload, GitHubReactions, GitHubRepository, GitHubUser } from "./types/github";
-import { APIEmbed, APIEmbedAuthor } from "./types/guilded";
+import type { z } from "zod";
+import { GitHubEventType, GitHubEventTypeToPayload, type GitHubReactions, type GitHubRepository, type GitHubUser } from "./types/github";
+import type { APIEmbed, APIEmbedAuthor } from "./types/guilded";
 
 const router = Router();
 
-export interface Env {
-}
-
-const green = 0x69F362,
-  red = 0xC45248,
-  yellow = 0xE4E74B;
+const green = 0x69F362;
+const red = 0xC45248;
+const yellow = 0xE4E74B;
 
 const getRepoUrl = (repo: z.infer<typeof GitHubRepository>): string => (
   `https://github.com/${repo.full_name}`
@@ -63,7 +60,7 @@ const getReactionsEmbed = (reactions: z.infer<typeof GitHubReactions>): APIEmbed
 };
 
 const shortCodeCommit = (commitId: string): string =>
-  "`" + commitId.slice(0, 8) + "`";
+  `\`${commitId.slice(0, 8)}\``;
 
 router
   .get("/", () => new Response(null, {
@@ -75,12 +72,12 @@ router
   .post("/webhooks/:id/:token", async (request) => {
     const { id, token } = request.params;
     const search = new URL(request.url).searchParams;
-    const showReactions = search.get("reactions") !== "false",
-      showDrafts = search.get("drafts") === "true",
-      immersiveRaw = search.get("immersive"),
-      forceProfile = search.get("branded") !== "false",
-      profileUsername = search.get("username"),
-      profileAvatarUrl = search.get("avatarUrl");
+    const showReactions = search.get("reactions") !== "false";
+    const showDrafts = search.get("drafts") === "true";
+    const immersiveRaw = search.get("immersive");
+    const forceProfile = search.get("branded") !== "false";
+    const profileUsername = search.get("username");
+    const profileAvatarUrl = search.get("avatarUrl");
 
     if (profileUsername && profileUsername.length > 128) {
       return json({ code: "ProxyBadUsername", message: "Username is too long." }, { status: 400 });
@@ -97,8 +94,8 @@ router
       ? immersiveRaw as "chat" | "embeds"
       : null;
 
-    const ua = request.headers.get("User-Agent"),
-      eventType_ = request.headers.get("X-GitHub-Event");
+    const ua = request.headers.get("User-Agent");
+    const eventType_ = request.headers.get("X-GitHub-Event");
 
     if (!ua?.startsWith("GitHub-Hookshot/")) {
       return json({ code: "ProxyBadUserAgent", message: "Invalid user agent." }, { status: 400 });
@@ -469,6 +466,8 @@ router
     return error(400);
   })
   .all("*", () => error(404));
+
+export type Env = Record<string, never>
 
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext): Promise<Response> =>
