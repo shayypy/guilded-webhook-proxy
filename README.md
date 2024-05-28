@@ -30,6 +30,12 @@ By default, GWP will show reaction counts (if any) under some applicable events.
 
 By default, to avoid spam, messages generated for the `release` event will not be sent if the release is still marked as a draft. To disable this and see messages for draft releases, pass `drafts=true` as a query parameter.
 
+### API
+
+This service exposes a `POST /raw/github` endpoint which will return the raw webhook request body, including [Guilded formatted embeds](https://www.guilded.gg/docs/api/chat/ChatEmbed), as the response body when a [GitHub event](https://docs.github.com/en/webhooks/webhook-events-and-payloads) is provided as the request. Be sure to preserve the headers, except for the user agent.
+
+This endpoint may return an empty message if your query parameters dictated that a particular event should be ignored.
+
 ## Supported Events
 
 - [ ] branch_protection_configuration

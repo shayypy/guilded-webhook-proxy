@@ -12,6 +12,7 @@
     "ngrok": "ngrok http 8787"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.6.4",
     "@cloudflare/workers-types": "^4.20231218.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
