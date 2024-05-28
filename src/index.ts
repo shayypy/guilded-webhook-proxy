@@ -27,7 +27,7 @@ router
       return json({});
     }
 
-    return json({ embeds: payload.embeds ?? [] });
+    return json(payload);
   })
   .post("/webhooks/:id/:token", async (request) => {
     const { id, token } = request.params;
