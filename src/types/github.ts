@@ -86,7 +86,14 @@ export const GitHubEventType = z.enum([
 ]);
 
 export const GitHubAuthorAssociation = z.enum([
-  "COLLABORATOR", "CONTRIBUTOR", "FIRST_TIMER", "FIRST_TIME_CONTRIBUTOR", "MANNEQUIN", "MEMBER", "NONE", "OWNER"
+  "COLLABORATOR",
+  "CONTRIBUTOR",
+  "FIRST_TIMER",
+  "FIRST_TIME_CONTRIBUTOR",
+  "MANNEQUIN",
+  "MEMBER",
+  "NONE",
+  "OWNER",
 ]);
 
 export const GitHubUser = z.object({
@@ -211,7 +218,12 @@ export const GitHubPullRequestPartial = z.object({
   base: GitHubBranch,
 });
 
-export const GitHubActiveLockReason = z.enum(["resolved", "off-topic", "too heated", "spam"]);
+export const GitHubActiveLockReason = z.enum([
+  "resolved",
+  "off-topic",
+  "too heated",
+  "spam",
+]);
 
 export const GitHubIssueLabel = z.object({
   color: z.string(),
@@ -224,7 +236,16 @@ export const GitHubIssueLabel = z.object({
 
 export const GitHubPullRequest = z.object({
   _links: z.record(
-    z.enum(["comments", "commits", "html", "issue", "review_comment", "review_comments", "self", "statuses"]),
+    z.enum([
+      "comments",
+      "commits",
+      "html",
+      "issue",
+      "review_comment",
+      "review_comments",
+      "self",
+      "statuses",
+    ]),
     z.object({ href: z.string() }),
   ),
   id: z.number(),
@@ -235,12 +256,14 @@ export const GitHubPullRequest = z.object({
   assignee: GitHubUser.nullable(),
   assignees: GitHubUser.nullable().array(),
   author_association: GitHubAuthorAssociation,
-  auto_merge: z.object({
-    commit_message: z.string().nullable(),
-    commit_title: z.string().nullable(),
-    enabled_by: GitHubUser.nullable(),
-    merge_method: z.enum(["merge", "squash", "rebase"]),
-  }).nullable(),
+  auto_merge: z
+    .object({
+      commit_message: z.string().nullable(),
+      commit_title: z.string().nullable(),
+      enabled_by: GitHubUser.nullable(),
+      merge_method: z.enum(["merge", "squash", "rebase"]),
+    })
+    .nullable(),
   base: z.object({
     label: z.string(),
     ref: z.string(),
@@ -312,13 +335,15 @@ export const GitHubIssue = z.object({
   labels: GitHubIssueLabel.array(),
   locked: z.boolean(),
   number: z.number(),
-  pull_request: z.object({
-    diff_url: z.ostring(),
-    html_url: z.ostring(),
-    merged_at: z.ostring().nullable(),
-    patch_url: z.ostring(),
-    url: z.ostring(),
-  }).optional(),
+  pull_request: z
+    .object({
+      diff_url: z.ostring(),
+      html_url: z.ostring(),
+      merged_at: z.ostring().nullable(),
+      patch_url: z.ostring(),
+      url: z.ostring(),
+    })
+    .optional(),
   reactions: GitHubReactions,
   repository_url: z.string(),
   state: z.enum(["open", "closed"]),
@@ -358,11 +383,13 @@ export const GitHubWebhook = z.object({
   deliveries_url: z.ostring(),
   events: z.string().array(),
   id: z.number(),
-  last_response: z.object({
-    code: z.number().nullable(),
-    status: z.string().nullable(),
-    message: z.string().nullable(),
-  }).optional(),
+  last_response: z
+    .object({
+      code: z.number().nullable(),
+      status: z.string().nullable(),
+      message: z.string().nullable(),
+    })
+    .optional(),
   name: z.literal("web"),
   ping_url: z.ostring(),
   test_url: z.ostring(),
@@ -397,24 +424,31 @@ export const GitHubEventTypeToPayload = {
   check_run: z.object({
     type: z.literal("check_run"),
     pl: z.object({
-      action: z.enum(["completed", "created", "requested_action", "rerequested"]),
+      action: z.enum([
+        "completed",
+        "created",
+        "requested_action",
+        "rerequested",
+      ]),
       check_run: z.object({
         app: GitHubApp,
         check_suite: z.object({
           after: z.ostring().nullable(),
           app: GitHubApp,
           before: z.ostring().nullable(),
-          conclusion: z.enum([
-            "success",
-            "failure",
-            "neutral",
-            "cancelled",
-            "skipped",
-            "timed_out",
-            "action_required",
-            "stale",
-            "startup_failure",
-          ]).nullable(),
+          conclusion: z
+            .enum([
+              "success",
+              "failure",
+              "neutral",
+              "cancelled",
+              "skipped",
+              "timed_out",
+              "action_required",
+              "stale",
+              "startup_failure",
+            ])
+            .nullable(),
           created_at: z.ostring(),
           head_branch: z.ostring(),
           head_sha: z.ostring(),
@@ -422,13 +456,9 @@ export const GitHubEventTypeToPayload = {
           node_id: z.ostring(),
           pull_requests: GitHubPullRequestPartial.array(),
           repository: GitHubRepository,
-          status: z.enum([
-            "queued",
-            "in_progress",
-            "completed",
-            "pending",
-            "waiting",
-          ]).optional(),
+          status: z
+            .enum(["queued", "in_progress", "completed", "pending", "waiting"])
+            .optional(),
           waiting_at: z.ostring(),
           url: z.ostring(),
         }),
@@ -437,11 +467,13 @@ export const GitHubEventTypeToPayload = {
         // ...
       }),
       repository: GitHubRepository,
-      requested_action: z.object({
-        identifier: z.ostring(),
-      }).optional(),
+      requested_action: z
+        .object({
+          identifier: z.ostring(),
+        })
+        .optional(),
       sender: GitHubUser,
-    })
+    }),
   }),
   commit_comment: z.object({
     type: z.literal("commit_comment"),
@@ -450,7 +482,7 @@ export const GitHubEventTypeToPayload = {
       comment: GitHubComment,
       repository: GitHubRepository,
       sender: GitHubUser,
-    })
+    }),
   }),
   create: z.object({
     type: z.literal("create"),
@@ -462,7 +494,7 @@ export const GitHubEventTypeToPayload = {
       ref_type: z.string(),
       repository: GitHubRepository,
       sender: GitHubUser,
-    })
+    }),
   }),
   delete: z.object({
     type: z.literal("delete"),
@@ -472,7 +504,7 @@ export const GitHubEventTypeToPayload = {
       ref_type: z.enum(["tag", "branch"]),
       repository: GitHubRepository,
       sender: GitHubUser,
-    })
+    }),
   }),
   fork: z.object({
     type: z.literal("fork"),
@@ -495,7 +527,24 @@ export const GitHubEventTypeToPayload = {
   issues: z.object({
     type: z.literal("issues"),
     pl: z.object({
-      action: z.enum(["assigned", "closed", "deleted", "demilestoned", "edited", "labeled", "locked", "milestoned", "opened", "pinned", "reopened", "transferred", "unassigned", "unlabeled", "unlocked", "unpinned"]),
+      action: z.enum([
+        "assigned",
+        "closed",
+        "deleted",
+        "demilestoned",
+        "edited",
+        "labeled",
+        "locked",
+        "milestoned",
+        "opened",
+        "pinned",
+        "reopened",
+        "transferred",
+        "unassigned",
+        "unlabeled",
+        "unlocked",
+        "unpinned",
+      ]),
       assignee: GitHubUser.optional(),
       issue: GitHubIssue,
       repository: GitHubRepository,
@@ -624,18 +673,20 @@ export const GitHubEventTypeToPayload = {
         "unpublished",
       ]),
       release: z.object({
-        assets: z.object({
-          browser_download_url: z.string(),
-          content_type: z.string(),
-          download_count: z.number(),
-          id: z.number(),
-          label: z.string().nullable(),
-          name: z.string(),
-          size: z.number(),
-          state: z.literal("uploaded"),
-          uploader: GitHubUser.nullable(),
-          url: z.string(),
-        }).array(),
+        assets: z
+          .object({
+            browser_download_url: z.string(),
+            content_type: z.string(),
+            download_count: z.number(),
+            id: z.number(),
+            label: z.string().nullable(),
+            name: z.string(),
+            size: z.number(),
+            state: z.literal("uploaded"),
+            uploader: GitHubUser.nullable(),
+            url: z.string(),
+          })
+          .array(),
         assets_url: z.string(),
         author: GitHubUser.nullable(),
         body: z.string().nullable(),
@@ -722,14 +773,16 @@ export const GitHubEventTypeToPayload = {
     type: z.literal("status"),
     pl: z.object({
       avatar_url: z.ostring().nullable(),
-      branches: z.object({
-        commit: z.object({
-          sha: z.string().nullable(),
-          url: z.string().nullable(),
-        }),
-        name: z.string(),
-        protected: z.boolean(),
-      }).array(),
+      branches: z
+        .object({
+          commit: z.object({
+            sha: z.string().nullable(),
+            url: z.string().nullable(),
+          }),
+          name: z.string(),
+          protected: z.boolean(),
+        })
+        .array(),
       commit: z.object({
         html_url: z.string(),
         sha: z.string(),
