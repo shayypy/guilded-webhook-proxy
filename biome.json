@@ -1,5 +1,8 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
+  "files": {
+    "ignore": [".wrangler/", "node_modules/"]
+  },
   "organizeImports": {
     "enabled": true
   },

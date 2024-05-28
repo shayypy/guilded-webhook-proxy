@@ -4,8 +4,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "lint": "eslint **/*.ts",
-    "fix": "eslint --fix **/*.ts",
+    "lint": "biome lint .",
+    "fix": "biome check --apply .",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev",
@@ -14,13 +14,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.6.4",
     "@cloudflare/workers-types": "^4.20231218.0",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.1.2",
     "ngrok": "^5.0.0-beta.2",
-    "prettier": "^3.1.1",
     "typescript": "^5.0.4",
     "wrangler": "^3.0.0"
   },
